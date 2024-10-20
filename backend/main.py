@@ -31,7 +31,7 @@ def predict():
         return jsonify({'error': 'Invalid image format'}), 400
 
     # Resize the image for faster processing (adjust dimensions as needed)
-    img = cv2.resize(img, (224, 224))  # Example resize, change according to your model
+    img = cv2.resize(img, (256, 256))  # Example resize, change according to your model
 
     # Perform prediction
     results = model.predict(img)

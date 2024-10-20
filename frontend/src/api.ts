@@ -28,7 +28,7 @@ export const predictAPI = async (imageFile: File) => {
       data: formData,
     });
 
-    return response;
+    return response.data;
   } catch (error) {
     console.log(error);
   }
