@@ -3,6 +3,7 @@ import Webcam from "react-webcam";
 import styled from "styled-components";
 import { predictAPI } from "../api";
 import { drawBoundingBoxes, imageSourceToFile } from "../utlities";
+import Item from "../models/item";
 
 interface Props {
   captureInterval?: number;
@@ -11,7 +12,7 @@ interface Props {
 export interface SnackWebcamHandle {
   startStreaming: () => void;
   stopStreaming: () => void;
-  getScreenshot: () => string | null | undefined;
+  getItems: () => Promise<Item[]>;
 }
 
 const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
@@ -23,7 +24,7 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
     useImperativeHandle(ref, () => ({
       startStreaming,
       stopStreaming,
-      getScreenshot: () => webcamRef.current?.getScreenshot(),
+      getItems: async () => await getItemsFromSnapshot(),
     }));
 
     useEffect(() => {
@@ -32,9 +33,8 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
     }, [webcamRef]);
 
     function startStreaming() {
-      if (intervalRef.current) return; // Prevent starting a new interval if one is already running
-      console.log("line 39");
-      intervalRef.current = setInterval(onVideoRecord, captureInterval);
+      if (!intervalRef.current)
+        intervalRef.current = setInterval(onVideoRecord, captureInterval);
     }
 
     function stopStreaming() {
@@ -44,17 +44,20 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
       intervalRef.current = null;
     }
 
-    async function onVideoRecord() {
-      console.log("hit here");
+    async function getItemsFromSnapshot() {
       const imageSource = webcamRef.current?.getScreenshot();
-      if (!imageSource) return;
+      if (!imageSource) return [];
 
+      const file = await imageSourceToFile(imageSource);
+      return (await predictAPI(file)) || [];
+    }
+
+    async function onVideoRecord() {
       try {
-        console.log("Hit");
-        const file = await imageSourceToFile(imageSource);
-        const predictions = await predictAPI(file);
-        if (canvasRef.current)
-          drawBoundingBoxes(canvasRef.current, predictions);
+        if (!canvasRef.current) return;
+
+        const items = await getItemsFromSnapshot();
+        drawBoundingBoxes(canvasRef.current, items);
       } catch (error) {
         console.error("Error capturing image:", error);
       }

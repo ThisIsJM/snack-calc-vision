@@ -1,5 +1,6 @@
 import axios from "axios";
 import { SERVER_URL } from "../constants/server-address";
+import Item from "./models/item";
 
 export const checkAPI = async () => {
   try {
@@ -28,7 +29,7 @@ export const predictAPI = async (imageFile: File) => {
       data: formData,
     });
 
-    return response.data;
+    return response.data as Item[];
   } catch (error) {
     console.log(error);
   }
