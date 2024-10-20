@@ -47,8 +47,8 @@ def predict():
     ]
 
     # Assuming object is a list of Results objects
-    if(len(objects) > 0):
-        save_image_results(results)
+    # if(len(objects) > 0):
+    #     save_image_results(results)
 
     return jsonify(objects)
 
