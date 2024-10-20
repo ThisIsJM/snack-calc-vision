@@ -1,8 +1,8 @@
-import Item from "./models/item";
+import Detection from "./models/detection";
 
 export function drawBoundingBoxes(
   canvas: HTMLCanvasElement,
-  detections: Item[]
+  detections: Detection[]
 ) {
   const context = canvas?.getContext("2d");
 
