@@ -5,13 +5,13 @@ import numpy as np
 from ultralytics import YOLO
 import os
 from constants import snack_labels
+from  model_utils import save_image_results
 
 app = Flask(__name__)
 CORS(app)
 
 model_path = os.path.join(os.path.dirname(__file__), 'best.pt')
 model = YOLO(model_path)
-# model = torch.hub.load('ultralytics/yolov8', 'custom',path=model_path)
 
 @app.route('/', methods=['GET'])
 def home():
@@ -45,6 +45,10 @@ def predict():
         }
         for result in results for box in result.boxes
     ]
+
+    # Assuming object is a list of Results objects
+    if(len(objects) > 0):
+        save_image_results(results)
 
     return jsonify(objects)
 
