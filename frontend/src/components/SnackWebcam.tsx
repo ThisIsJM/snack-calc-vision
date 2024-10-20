@@ -3,20 +3,21 @@ import Webcam from "react-webcam";
 import styled from "styled-components";
 import { predictAPI } from "../api";
 import { drawBoundingBoxes, imageSourceToFile } from "../utlities";
-import Item from "../models/item";
+import { Button } from "@mui/material";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
 interface Props {
   captureInterval?: number;
+  onImageCapture?: (file: File | undefined) => void;
 }
 
 export interface SnackWebcamHandle {
   startStreaming: () => void;
   stopStreaming: () => void;
-  getItems: () => Promise<Item[]>;
 }
 
 const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
-  ({ captureInterval = 1500 }, ref) => {
+  ({ captureInterval = 1500, onImageCapture }, ref) => {
     const webcamRef = useRef<Webcam>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -24,11 +25,10 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
     useImperativeHandle(ref, () => ({
       startStreaming,
       stopStreaming,
-      getItems: async () => await getItemsFromSnapshot(),
     }));
 
     useEffect(() => {
-      startStreaming();
+      // startStreaming();
       return () => stopStreaming();
     }, [webcamRef]);
 
@@ -44,28 +44,42 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
       intervalRef.current = null;
     }
 
-    async function getItemsFromSnapshot() {
+    async function captureImage() {
       const imageSource = webcamRef.current?.getScreenshot();
-      if (!imageSource) return [];
+      if (!imageSource) return;
 
-      const file = await imageSourceToFile(imageSource);
-      return (await predictAPI(file)) || [];
+      return await imageSourceToFile(imageSource);
     }
 
     async function onVideoRecord() {
       try {
-        if (!canvasRef.current) return;
+        const file = await captureImage();
+        if (!canvasRef.current || !file) return;
 
-        const items = await getItemsFromSnapshot();
+        const items = (await predictAPI(file)) || [];
+
         drawBoundingBoxes(canvasRef.current, items);
       } catch (error) {
         console.error("Error capturing image:", error);
       }
     }
 
+    async function onCaptureButtonPressed() {
+      const file = await captureImage();
+      onImageCapture?.(file);
+    }
+
     return (
       <Container>
         <StyledWebcam ref={webcamRef} muted={true} />
+        <CaptureButton
+          onClick={onCaptureButtonPressed}
+          variant="contained"
+          color="error"
+          size="small"
+        >
+          <CameraAltIcon fontSize="large" />
+        </CaptureButton>
         <StyledCanvas ref={canvasRef} />
       </Container>
     );
@@ -73,16 +87,28 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
 );
 
 const Container = styled.div`
+  display: flex;
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  box-sizing: border-box;
+`;
+
+const CaptureButton = styled(Button)`
+  aspect-ratio: 1;
+  border-radius: 50%;
+  margin: auto;
+  margin-right: 30px;
 `;
 
 const StyledWebcam = styled(Webcam)`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scaleX(-1);
+  pointer-events: none;
 `;
 
 const StyledCanvas = styled.canvas`
