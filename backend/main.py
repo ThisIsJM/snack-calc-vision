@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 import os
-from  model_utils import predict_displayed_items
+from  model_utils import get_displayed_items, calculate_item_price
 
 app = Flask(__name__)
 CORS(app)
@@ -26,29 +26,25 @@ def predict():
     img_data = np.frombuffer(file.read(), np.uint8)
     img = cv2.imdecode(img_data, cv2.IMREAD_COLOR)
 
-    results = predict_displayed_items(img)
+    results = get_displayed_items(img)
 
     if 'error' in results:
-        return jsonify({'error': results['error']}), 400
+        return jsonify({'error': results['error']}), 400   
 
     return jsonify(results), 200
 
-# @app.route('/calculate-price', methods=["POST"])
-# def calculate_price():
-#     if 'image' not in request.files:
-#         return jsonify({'error': 'No image provided'}), 400
+@app.route('/calculate-price', methods=["POST"])
+def calculate_price():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image provided'}), 400
 
-#     # Read the image file and decode in a single step
-#     file = request.files['image']
-#     img_data = np.frombuffer(file.read(), np.uint8)
-#     img = cv2.imdecode(img_data, cv2.IMREAD_COLOR)
+    # Read the image file and decode in a single step
+    file = request.files['image']
+    img_data = np.frombuffer(file.read(), np.uint8)
+    img = cv2.imdecode(img_data, cv2.IMREAD_COLOR)
 
-#     results = predict_displayed_items(img)
-
-
-
-
-
+    item_prices = calculate_item_price(img)
+    return jsonify(item_prices), 200
 
 
 if __name__ == '__main__':

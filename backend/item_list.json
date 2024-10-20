@@ -1,22 +1,22 @@
 [
   {
     "name": "Fita",
-    "price": "3.45",
+    "price": 12.0,
     "id": 1
   },
   {
     "name": "Hello Snack Bar",
-    "price": "2.67",
+    "price": 10.0,
     "id": 2
   },
   {
     "name": "Monde Special Mammon",
-    "price": "4.20",
+    "price": 20.0,
     "id": 3
   },
   {
     "name": "Rebisco",
-    "price": "1.99",
+    "price": 8.0,
     "id": 4
   }
 ]
