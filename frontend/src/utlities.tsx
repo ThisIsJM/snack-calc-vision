@@ -1,48 +1,58 @@
-// Define our labelmap
-const labelMap = {
-  1: { name: "Hello", color: "red" },
-  2: { name: "Thank You", color: "yellow" },
-  3: { name: "I Love You", color: "lime" },
-  4: { name: "Yes", color: "blue" },
-  5: { name: "No", color: "purple" },
-};
+import Item from "./models/item";
 
-// Define a drawing function
-export const drawRect = (
-  boxes,
-  classes,
-  scores,
-  threshold,
-  imgWidth,
-  imgHeight,
-  ctx
-) => {
-  for (let i = 0; i <= boxes.length; i++) {
-    if (boxes[i] && classes[i] && scores[i] > threshold) {
-      // Extract variables
-      const [y, x, height, width] = boxes[i];
-      const text = classes[i];
+export function drawBoundingBoxes(
+  canvas: HTMLCanvasElement,
+  detections: Item[]
+) {
+  const context = canvas?.getContext("2d");
 
-      // Set styling
-      ctx.strokeStyle = labelMap[text]["color"];
-      ctx.lineWidth = 10;
-      ctx.fillStyle = "white";
-      ctx.font = "30px Arial";
+  if (!canvas || !context) return;
 
-      // DRAW!!
-      ctx.beginPath();
-      ctx.fillText(
-        labelMap[text]["name"] + " - " + Math.round(scores[i] * 100) / 100,
-        x * imgWidth,
-        y * imgHeight - 10
-      );
-      ctx.rect(
-        x * imgWidth,
-        y * imgHeight,
-        (width * imgWidth) / 2,
-        (height * imgHeight) / 1.5
-      );
-      ctx.stroke();
-    }
-  }
-};
+  // Clear the canvas before drawing
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Get the scaling factors
+  const scaleX = canvas.width / 256;
+  const scaleY = canvas.height / 256;
+
+  // Since the webcam is mirrored, adjust the x-coordinates
+  const mirroredWidth = canvas.width;
+
+  detections.forEach((detection) => {
+    // Scale the bounding box coordinates and mirror the x-coordinates
+    const [x1, y1, x2, y2] = detection.bbox.map((coord, index) => {
+      if (index % 2 === 0) {
+        // For x-coordinates, mirror them
+        return mirroredWidth - coord * scaleX;
+      }
+      // For y-coordinates, just scale
+      return coord * scaleY;
+    });
+    context.beginPath();
+    context.rect(x1, y1, x2 - x1, y2 - y1);
+    context.lineWidth = 2;
+    context.strokeStyle = "red";
+    context.fillStyle = "rgba(255, 0, 0, 0.3)";
+    context.fill();
+    context.stroke();
+
+    // Draw the class label and confidence
+    context.font = "16px Arial";
+    context.fillStyle = "white";
+    context.fillText(
+      `${detection.class} (${(detection.confidence * 100).toFixed(1)}%)`,
+      x1,
+      y1 > 20 ? y1 - 5 : y1 + 20
+    );
+  });
+}
+
+export async function imageSourceToFile(imageSource: string) {
+  const response = await fetch(imageSource);
+  const blob = await response.blob();
+  const file = new File([blob], "captured-image.png", {
+    type: "image/png",
+  });
+
+  return file;
+}
