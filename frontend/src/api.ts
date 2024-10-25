@@ -1,5 +1,6 @@
 import axios from "axios";
 import { SERVER_URL } from "../constants/server-address";
+import Transaction from "./models/transaction";
 import Detection from "./models/detection";
 
 export const checkAPI = async () => {
@@ -49,7 +50,7 @@ export const calculateAPI = async (imageFile: File) => {
       data: formData,
     });
 
-    return response.data as Detection[];
+    return response.data as Transaction;
   } catch (error) {
     console.log(error);
   }

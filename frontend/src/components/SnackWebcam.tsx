@@ -28,7 +28,7 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
     }));
 
     useEffect(() => {
-      // startStreaming();
+      startStreaming();
       return () => stopStreaming();
     }, [webcamRef]);
 
@@ -109,6 +109,8 @@ const StyledWebcam = styled(Webcam)`
   height: 100%;
   object-fit: cover;
   pointer-events: none;
+
+  transform: scaleX(-1);
 `;
 
 const StyledCanvas = styled.canvas`
