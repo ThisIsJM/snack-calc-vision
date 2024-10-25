@@ -28,7 +28,7 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
     }));
 
     useEffect(() => {
-      startStreaming();
+      // startStreaming();
       return () => stopStreaming();
     }, [webcamRef]);
 
