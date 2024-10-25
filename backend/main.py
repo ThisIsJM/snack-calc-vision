@@ -5,6 +5,12 @@ import numpy as np
 from ultralytics import YOLO
 import os
 from  model_utils import get_displayed_items, calculate_item_price
+from supabase_queries import insert_item_query, insert_transaction_query
+
+# TODO
+# CALCULATE PRICE USING INFORMATION FROM DATABASE
+# INSERT TRANSACTION QUERY
+# GET TRANSACTION QUERY
 
 app = Flask(__name__)
 CORS(app)
@@ -46,6 +52,35 @@ def calculate_price():
     item_prices = calculate_item_price(img)
     return jsonify(item_prices), 200
 
+@app.route('/add-transaction', methods=['POST'])
+def handle_insert_transaction():
+    data = request.json
+    
+    # Extract grand total and items from request data
+    grand_total = data.get('grand_total')
+    items = data.get('items')
+    
+    if not grand_total or not items:
+        return jsonify({"error": "Missing grand_total or items"}), 400
+
+    try:
+        # Insert transaction and get transaction ID
+        transaction_id = insert_transaction_query(grand_total)
+        
+        # Insert items into Items table
+        for item in items:
+            item_category_id = item.get('item_category_id')  # Get item category ID
+            quantity = item.get('quantity')  # Get item quantity
+            
+            if not item_category_id or quantity is None:
+                return jsonify({"error": "Missing item_category_id or quantity in items"}), 400
+            
+            insert_item_query(transaction_id, item_category_id, quantity)
+        
+        return jsonify({"transaction_id": transaction_id}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0",port=5000,debug=True)

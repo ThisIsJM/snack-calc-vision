@@ -2,7 +2,7 @@ from ultralytics import YOLO
 from datetime import datetime
 from PIL import Image
 import cv2
-from constants import item_list
+from supabase_queries import fetch_item_categories
 import os
 
 model_path = os.path.join(os.path.dirname(__file__), 'best.pt')
@@ -32,6 +32,7 @@ def predict_from_image(img):
     return model.predict(img)
 
 def get_displayed_items(img):
+    item_categories = fetch_item_categories()
     results = predict_from_image(img)
 
     if 'error' in results:
@@ -40,7 +41,7 @@ def get_displayed_items(img):
     objects = [
         {
             'bbox': box.xyxy[0].tolist(),
-            'class': item_list[int(box.cls[0].item())]['name'],
+            'class': item_categories.get(int(box.cls[0].item()), 'Unknown'),
             'confidence': box.conf[0].item()
         }
         for result in results for box in result.boxes
@@ -49,6 +50,7 @@ def get_displayed_items(img):
     return objects
 
 def calculate_item_price(img):
+    item_categories = fetch_item_categories()
     results = predict_from_image(img)
 
     if 'error' in results:
@@ -68,8 +70,8 @@ def calculate_item_price(img):
         for box in result.boxes:
             class_id = int(box.cls[0].item())
 
-            item_name = item_list[class_id]["name"]
-            price_per_item = item_list[class_id]['price'] 
+            item_name = item_categories[class_id]["name"]
+            price_per_item = item_categories[class_id]['price'] 
 
             #Count occurances for quantity
             if item_name in item_counts:
