@@ -5,12 +5,8 @@ import numpy as np
 from ultralytics import YOLO
 import os
 from  model_utils import get_displayed_items, calculate_item_price
-from supabase_queries import insert_item_query, insert_transaction_query
+from supabase_queries import insert_item_query, insert_transaction_query, get_all_transactions
 
-# TODO
-# CALCULATE PRICE USING INFORMATION FROM DATABASE
-# INSERT TRANSACTION QUERY
-# GET TRANSACTION QUERY
 
 app = Flask(__name__)
 CORS(app)
@@ -58,9 +54,9 @@ def handle_insert_transaction():
     
     # Extract grand total and items from request data
     grand_total = data.get('grand_total')
-    items = data.get('items')
+    item_list = data.get('item_list')
     
-    if not grand_total or not items:
+    if not grand_total or not item_list:
         return jsonify({"error": "Missing grand_total or items"}), 400
 
     try:
@@ -68,7 +64,7 @@ def handle_insert_transaction():
         transaction_id = insert_transaction_query(grand_total)
         
         # Insert items into Items table
-        for item in items:
+        for item in item_list:
             item_category_id = item.get('item_category_id')  # Get item category ID
             quantity = item.get('quantity')  # Get item quantity
             
@@ -81,6 +77,13 @@ def handle_insert_transaction():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/get-transactions',methods=["GET"])
+def handle_get_transactions():
+    response = get_all_transactions()
+
+    return jsonify(response.data), 200
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0",port=5000,debug=True)

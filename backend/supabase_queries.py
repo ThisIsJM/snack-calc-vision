@@ -38,3 +38,7 @@ def insert_item_query(transaction_id, item_category_id, quantity):
         'item_category_id': item_category_id,
         'quantity': quantity
     }).execute()
+
+def get_all_transactions():
+    return supabase.rpc("get_all_transactions").execute()
+

@@ -79,6 +79,7 @@ def calculate_item_price(img):
             else:
                 item_counts[item_name] = {
                     'name': item_name,
+                    'item_category_id': class_id + 1, #class_id is a zero based index while database id's starts at 1
                     'quantity': 1,
                     'price': price_per_item
                 }
@@ -88,7 +89,13 @@ def calculate_item_price(img):
     for item in item_counts.values():
         item['total_price'] = item['quantity'] * item['price']
         grand_total += item['total_price']
-        item_details.append(item)
+
+        item_details.append({
+            'name': item['name'],
+            'item_category_id': item['item_category_id'],
+            'quantity': item['quantity'],
+            'total_price': item['total_price']
+        })
 
     return {
         'item_list': item_details,

@@ -1,6 +1,6 @@
 interface Item {
   name: string;
-  price: number;
+  item_category_id: number;
   quantity: number;
   total_price: number;
 }
