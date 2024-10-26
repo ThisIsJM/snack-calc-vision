@@ -55,3 +55,37 @@ export const calculateAPI = async (imageFile: File) => {
     console.log(error);
   }
 };
+
+export const addTransactionAPI = async (transaction: Transaction) => {
+  try {
+    const response = await axios({
+      method: "POST",
+      headers: {
+        "Content-Type:": "application/json",
+      },
+      url: `${SERVER_URL}/add-transaction`,
+      data: { transaction },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getTransactionsAPI = async () => {
+  try {
+    const response = await axios({
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      url: `${SERVER_URL}/get-transactions`,
+    });
+
+    return response.data as Transaction[];
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
