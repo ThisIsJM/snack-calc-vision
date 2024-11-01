@@ -1,14 +1,12 @@
 import styled from "styled-components";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Scanner from "./components/pages/Scanner";
-import Navbar from "./components/Navbar";
 import Home from "./components/pages/Home";
 
 function App() {
   return (
     <MainContainer>
       <BrowserRouter>
-        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/scanner" element={<Scanner />} />

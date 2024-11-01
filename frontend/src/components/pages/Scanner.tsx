@@ -4,7 +4,7 @@ import TransactionModal from "../TransactionModal";
 import Transaction from "../../models/transaction";
 import { calculateAPI } from "../../api";
 
-interface ShowResponse {
+export interface ShowResponse {
   show: boolean;
   transaction: Transaction | undefined;
 }
