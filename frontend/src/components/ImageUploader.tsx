@@ -1,4 +1,5 @@
 import { Button } from "@mui/material";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 import React, { useState } from "react";
 import { calculateAPI } from "../api";
 import { ShowResponse } from "./pages/Scanner";
@@ -39,7 +40,11 @@ function ImageUploader() {
         style={{ display: "none" }} // Hide the default input
         id="image-upload"
       />
-      <Button variant="outlined" onClick={handleButtonClick}>
+      <Button
+        variant="contained"
+        onClick={handleButtonClick}
+        endIcon={<FileUploadIcon />}
+      >
         Upload Image
       </Button>
       <TransactionModal
