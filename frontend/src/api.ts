@@ -64,7 +64,7 @@ export const addTransactionAPI = async (transaction: Transaction) => {
         "Content-Type": "application/json",
       },
       url: `${SERVER_URL}/add-transaction`,
-      data: { transaction },
+      data: transaction,
     });
 
     console.log(response.data);
