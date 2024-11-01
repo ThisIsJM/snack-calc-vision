@@ -19,11 +19,11 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { useEffect, useState } from "react";
 
 interface Props {
-  show: boolean;
-  image: File | null;
-  transaction: Transaction | undefined;
-  closeHandler: () => void;
-  submitHandler: () => Promise<void | boolean>;
+  readonly show: boolean;
+  readonly image: File | null;
+  readonly transaction: Transaction | undefined;
+  readonly closeHandler: () => void;
+  readonly submitHandler: () => Promise<void | boolean>;
 }
 
 function TransactionModal({
@@ -136,7 +136,12 @@ function TransactionModal({
       </DialogTitle>
       <DialogContent dividers>
         {imageSource && (
-          <img src={imageSource} width={"100%"} height={"250px"} />
+          <img
+            src={imageSource}
+            width={"100%"}
+            height={"250px"}
+            alt="transaction-image"
+          />
         )}
         <Table size="small">
           <colgroup>
