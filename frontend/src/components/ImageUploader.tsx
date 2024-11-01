@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import React, { useState } from "react";
 import { calculateAPI } from "../api";
@@ -7,21 +7,25 @@ import TransactionModal from "./TransactionModal";
 
 function ImageUploader() {
   const [image, setImage] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [showResponse, setShowResponse] = useState<ShowResponse>({
     show: false,
     transaction: undefined,
   });
 
-  const handleImageChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  async function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setIsLoading(true);
     const file = event.target.files?.[0];
+
     if (file) {
       const transaction = await calculateAPI(file);
       setImage(file);
       setShowResponse({ show: true, transaction });
     }
-  };
+
+    setIsLoading(false);
+  }
 
   const handleButtonClick = () => {
     document.getElementById("image-upload")?.click(); // Trigger file input click
@@ -45,7 +49,13 @@ function ImageUploader() {
       <Button
         variant="contained"
         onClick={handleButtonClick}
-        endIcon={<FileUploadIcon />}
+        endIcon={
+          isLoading ? (
+            <CircularProgress size={"14px"} color={"inherit"} />
+          ) : (
+            <FileUploadIcon />
+          )
+        }
       >
         Upload Image
       </Button>
