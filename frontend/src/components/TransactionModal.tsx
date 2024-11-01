@@ -14,6 +14,8 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -21,7 +23,7 @@ interface Props {
   image: File | null;
   transaction: Transaction | undefined;
   closeHandler: () => void;
-  submitHandler: () => void;
+  submitHandler: () => Promise<void | boolean>;
 }
 
 function TransactionModal({
@@ -32,10 +34,14 @@ function TransactionModal({
   submitHandler,
 }: Props) {
   const [imageSource, setImageSource] = useState<string>("");
+  const [success, setSuccess] = useState<boolean | null>(true);
 
   //Clean up
   useEffect(() => {
-    if (!show) setImageSource("");
+    if (!show) {
+      setImageSource("");
+      setSuccess(null);
+    }
   }, [show]);
 
   useEffect(() => {
@@ -72,6 +78,49 @@ function TransactionModal({
         <StyledTableCell align="left">{cells[1]}</StyledTableCell>
         <StyledTableCell align="right">{cells[2]}</StyledTableCell>
       </TableRow>
+    );
+  }
+
+  async function onSubmitPressed() {
+    const success = await submitHandler();
+    if (typeof success === "boolean") setSuccess(success);
+  }
+
+  if (typeof success === "boolean") {
+    return (
+      <Dialog
+        aria-labelledby="customized-dialog-title"
+        open={show}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Transaction Information
+        </DialogTitle>
+        <DialogContent
+          dividers
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          {success ? (
+            <>
+              <CheckCircleIcon sx={{ fontSize: 80 }} color="success" />
+              <Typography variant="h6">Transaction Saved!</Typography>
+            </>
+          ) : (
+            <>
+              <CancelIcon sx={{ fontSize: 80 }} color="error" />
+              <Typography variant="h6">Failed to Save Transaction</Typography>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeHandler}> Close</Button>
+        </DialogActions>
+      </Dialog>
     );
   }
 
@@ -118,7 +167,7 @@ function TransactionModal({
       </DialogContent>
       <DialogActions>
         <Button onClick={closeHandler}> Cancel</Button>
-        <Button onClick={submitHandler}>Save changes</Button>
+        <Button onClick={onSubmitPressed}>Save changes</Button>
       </DialogActions>
     </Dialog>
   );

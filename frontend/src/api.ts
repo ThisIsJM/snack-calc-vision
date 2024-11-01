@@ -61,15 +61,17 @@ export const addTransactionAPI = async (transaction: Transaction) => {
     const response = await axios({
       method: "POST",
       headers: {
-        "Content-Type:": "application/json",
+        "Content-Type": "application/json",
       },
       url: `${SERVER_URL}/add-transaction`,
       data: { transaction },
     });
 
-    return response.data;
+    console.log(response.data);
+    return { success: true, data: response.data };
   } catch (error) {
     console.log(error);
+    return { success: false, data: null };
   }
 };
 

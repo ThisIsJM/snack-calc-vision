@@ -1,7 +1,7 @@
 import { Button, CircularProgress } from "@mui/material";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import React, { useState } from "react";
-import { calculateAPI } from "../api";
+import { addTransactionAPI, calculateAPI } from "../api";
 import { ShowResponse } from "./pages/Scanner";
 import TransactionModal from "./TransactionModal";
 
@@ -35,7 +35,16 @@ function ImageUploader() {
     setShowResponse({ show: false, transaction: undefined });
   }
 
-  async function submitHandler() {}
+  async function submitHandler() {
+    const { transaction } = showResponse;
+
+    if (transaction) {
+      const response = await addTransactionAPI(transaction);
+      return response.success;
+    }
+
+    return false;
+  }
 
   return (
     <div>
