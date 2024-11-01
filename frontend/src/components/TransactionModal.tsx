@@ -14,9 +14,11 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useEffect, useState } from "react";
 
 interface Props {
   show: boolean;
+  image: File | null;
   transaction: Transaction | undefined;
   closeHandler: () => void;
   submitHandler: () => void;
@@ -24,10 +26,45 @@ interface Props {
 
 function TransactionModal({
   show,
+  image,
   transaction,
   closeHandler,
   submitHandler,
 }: Props) {
+  const [imageSource, setImageSource] = useState<string>("");
+
+  //Clean up
+  useEffect(() => {
+    if (!show) setImageSource("");
+  }, [show]);
+
+  useEffect(() => {
+    if (!image) {
+      setImageSource("");
+      return;
+    }
+
+    const getImageSource = async () => {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        if (reader.result) {
+          setImageSource(reader.result as string);
+        } else {
+          console.error("Failed to load image");
+        }
+      };
+
+      reader.onerror = () => {
+        console.error("File could not be read");
+      };
+
+      reader.readAsDataURL(image);
+    };
+
+    getImageSource();
+  }, [image]);
+
   function generateRow(cells: [string, string, string]) {
     return (
       <TableRow>
@@ -49,6 +86,9 @@ function TransactionModal({
         Transaction Information
       </DialogTitle>
       <DialogContent dividers>
+        {imageSource && (
+          <img src={imageSource} width={"100%"} height={"250px"} />
+        )}
         <Table size="small">
           <colgroup>
             <col width="10%" />

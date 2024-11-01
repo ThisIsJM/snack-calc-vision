@@ -6,6 +6,7 @@ import { ShowResponse } from "./pages/Scanner";
 import TransactionModal from "./TransactionModal";
 
 function ImageUploader() {
+  const [image, setImage] = useState<File | null>(null);
   const [showResponse, setShowResponse] = useState<ShowResponse>({
     show: false,
     transaction: undefined,
@@ -17,6 +18,7 @@ function ImageUploader() {
     const file = event.target.files?.[0];
     if (file) {
       const transaction = await calculateAPI(file);
+      setImage(file);
       setShowResponse({ show: true, transaction });
     }
   };
@@ -49,6 +51,7 @@ function ImageUploader() {
       </Button>
       <TransactionModal
         {...showResponse}
+        image={image}
         submitHandler={submitHandler}
         closeHandler={closeHandler}
       />
