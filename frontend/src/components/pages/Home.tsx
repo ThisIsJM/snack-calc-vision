@@ -1,27 +1,19 @@
 import { Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import styled from "styled-components";
-import Transaction from "../../models/transaction";
-import { useEffect, useState } from "react";
-import { getTransactionsAPI } from "../../api";
 import TransactionTable from "../TransactionTable";
 import SnackWebcam from "../SnackWebcam";
 import ImageUploader from "../ImageUploader";
+import { useTransactionStore } from "../../store";
+import { useEffect } from "react";
 
-/**
- * TODO
- * INSTALL DATE-FNS
- */
 function Home() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const { transactions, updateTransactions } = useTransactionStore(
+    (state) => state
+  );
 
   useEffect(() => {
-    const getTransactionHistory = async () => {
-      const transactions = await getTransactionsAPI();
-      setTransactions(transactions);
-    };
-
-    getTransactionHistory();
+    updateTransactions();
   }, []);
 
   return (

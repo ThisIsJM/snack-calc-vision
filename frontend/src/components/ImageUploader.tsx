@@ -4,8 +4,13 @@ import React, { useState } from "react";
 import { addTransactionAPI, calculateAPI } from "../api";
 import { ShowResponse } from "./pages/Scanner";
 import TransactionModal from "./TransactionModal";
+import { useTransactionStore } from "../store";
 
 function ImageUploader() {
+  const updateTransactions = useTransactionStore(
+    (state) => state.updateTransactions
+  );
+
   const [image, setImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -40,6 +45,8 @@ function ImageUploader() {
 
     if (transaction) {
       const response = await addTransactionAPI(transaction);
+      if (response.success) await updateTransactions();
+
       return response.success;
     }
 

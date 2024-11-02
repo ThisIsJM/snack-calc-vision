@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@mui/material";
 import Transaction from "../models/transaction";
+import { format } from "date-fns";
 
 interface Props {
   transactions: Transaction[];
@@ -16,6 +17,10 @@ interface Props {
 const TABLE_HEADERS = ["id", "Transaction Date", "Grand Total", "Actions"];
 
 function TransactionTable({ transactions }: Props) {
+  function formatDate(date: Date) {
+    return format(date, "MMM dd, yyyy hh:mm a");
+  }
+
   return (
     <TableContainer>
       <Table>
@@ -32,7 +37,7 @@ function TransactionTable({ transactions }: Props) {
               <TableCell>{transaction.id}</TableCell>
               <TableCell>
                 {transaction.created_at !== undefined &&
-                  new Date(transaction.created_at)?.toTimeString()}
+                  formatDate(new Date(transaction.created_at))}
               </TableCell>
               <TableCell>{transaction.grand_total.toFixed(2)} PHP</TableCell>
               <TableCell>
