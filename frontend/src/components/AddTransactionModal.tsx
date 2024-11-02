@@ -20,7 +20,7 @@ interface Props {
   readonly submitHandler: () => Promise<void | boolean>;
 }
 
-function TransactionModal({
+function AddTransactionModal({
   show,
   image,
   transaction,
@@ -137,4 +137,4 @@ function TransactionModal({
   );
 }
 
-export default TransactionModal;
+export default AddTransactionModal;

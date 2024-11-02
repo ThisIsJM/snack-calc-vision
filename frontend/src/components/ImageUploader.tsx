@@ -3,7 +3,7 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import React, { useState } from "react";
 import { addTransactionAPI, calculateAPI } from "../api";
 import { ShowResponse } from "./pages/Scanner";
-import TransactionModal from "./TransactionModal";
+import AddTransactionModal from "./AddTransactionModal";
 import { useTransactionStore } from "../store";
 
 function ImageUploader() {
@@ -75,7 +75,7 @@ function ImageUploader() {
       >
         Upload Image
       </Button>
-      <TransactionModal
+      <AddTransactionModal
         {...showResponse}
         image={image}
         submitHandler={submitHandler}

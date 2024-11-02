@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SnackWebcam from "../SnackWebcam";
-import TransactionModal from "../TransactionModal";
+import AddTransactionModal from "../AddTransactionModal";
 import Transaction from "../../models/transaction";
 import { calculateAPI } from "../../api";
 
@@ -38,7 +38,7 @@ function Scanner() {
   return (
     <>
       <SnackWebcam onImageCapture={calculatePrice} />
-      <TransactionModal
+      <AddTransactionModal
         closeHandler={closeHandler}
         submitHandler={submitHandler}
         {...showResponse}
