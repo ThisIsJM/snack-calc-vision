@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import Transaction from "../models/transaction";
 import {
   Button,
@@ -6,17 +5,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Typography,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useEffect, useState } from "react";
+import TransactionDetails from "./TransactionDetails";
 
 interface Props {
   readonly show: boolean;
@@ -70,16 +64,6 @@ function TransactionModal({
 
     getImageSource();
   }, [image]);
-
-  function generateRow(cells: [string, string, string]) {
-    return (
-      <TableRow>
-        <StyledTableCell align="left">{cells[0]}</StyledTableCell>
-        <StyledTableCell align="left">{cells[1]}</StyledTableCell>
-        <StyledTableCell align="right">{cells[2]}</StyledTableCell>
-      </TableRow>
-    );
-  }
 
   async function onSubmitPressed() {
     const success = await submitHandler();
@@ -143,32 +127,7 @@ function TransactionModal({
             alt="transaction-image"
           />
         )}
-        <Table size="small">
-          <colgroup>
-            <col width="10%" />
-            <col width="80%" />
-            <col width="10%" />
-          </colgroup>
-          <TableHead>{generateRow(["QNTY", "ITEM", "PRICE"])}</TableHead>
-          <TableBody>
-            {transaction?.item_list.map((item) =>
-              generateRow([
-                item.quantity.toString(),
-                item.name,
-                item.total_price.toFixed(2).toString(),
-              ])
-            )}
-          </TableBody>
-        </Table>
-        <Divider orientation="horizontal" />
-        <GrandTotalContainer>
-          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-            GRAND TOTAL:
-          </Typography>
-          <Typography variant="body2" sx={{ fontWeight: 500 }}>
-            {transaction?.grand_total.toFixed(2)} PHP
-          </Typography>
-        </GrandTotalContainer>
+        {transaction && <TransactionDetails transaction={transaction} />}
       </DialogContent>
       <DialogActions>
         <Button onClick={closeHandler}> Cancel</Button>
@@ -177,20 +136,5 @@ function TransactionModal({
     </Dialog>
   );
 }
-
-const StyledTableCell = styled(TableCell)`
-  border: none;
-
-  white-space: nowrap;
-  text-overflow: ellipsis;
-`;
-
-const GrandTotalContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px;
-  padding-right: 15px;
-`;
 
 export default TransactionModal;
