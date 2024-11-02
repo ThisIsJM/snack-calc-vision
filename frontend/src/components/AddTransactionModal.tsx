@@ -116,7 +116,7 @@ function AddTransactionModal({
       fullWidth
     >
       <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-        Transaction Information
+        Save Transaction?
       </DialogTitle>
       <DialogContent dividers>
         {imageSource && (
