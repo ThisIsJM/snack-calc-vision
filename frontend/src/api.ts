@@ -75,14 +75,14 @@ export const addTransactionAPI = async (transaction: Transaction) => {
   }
 };
 
-export const getTransactionsAPI = async () => {
+export const getAllTransactionsAPI = async () => {
   try {
     const response = await axios({
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      url: `${SERVER_URL}/get-transactions`,
+      url: `${SERVER_URL}/all-transactions`,
     });
 
     return response.data as Transaction[];

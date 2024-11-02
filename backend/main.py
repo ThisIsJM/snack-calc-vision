@@ -5,7 +5,7 @@ import numpy as np
 from ultralytics import YOLO
 import os
 from  model_utils import get_displayed_items, calculate_item_price
-from supabase_queries import insert_item_query, insert_transaction_query, get_all_transactions
+from supabase_queries import insert_item_query, insert_transaction_query, get_all_transactions, get_transaction
 
 
 app = Flask(__name__)
@@ -78,11 +78,22 @@ def handle_insert_transaction():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@app.route('/get-transactions',methods=["GET"])
+@app.route('/all-transactions',methods=["GET"])
 def handle_get_transactions():
     response = get_all_transactions()
 
     return jsonify(response.data), 200
+
+@app.route('/transaction', methods=["GET"])
+def handle_get_transaction():
+    try:
+        data = request.json
+        response = get_transaction(data.id)
+
+        return jsonify(response.data), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':
