@@ -1,10 +1,11 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import styled from "styled-components";
 import { predictAPI } from "../api";
 import { drawBoundingBoxes, imageSourceToFile } from "../utlities";
 import { Button } from "@mui/material";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface Props {
   captureInterval?: number;
@@ -22,19 +23,18 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+    const [isStreaming, setIsStreaming] = useState<boolean>(false);
+
     useImperativeHandle(ref, () => ({
       startStreaming,
       stopStreaming,
     }));
 
-    useEffect(() => {
-      // startStreaming();
-      return () => stopStreaming();
-    }, [webcamRef]);
-
     function startStreaming() {
-      if (!intervalRef.current)
+      if (!intervalRef.current) {
         intervalRef.current = setInterval(onVideoRecord, captureInterval);
+        setIsStreaming(true);
+      }
     }
 
     function stopStreaming() {
@@ -42,6 +42,7 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
 
       clearInterval(intervalRef.current);
       intervalRef.current = null;
+      setIsStreaming(false);
     }
 
     async function captureImage() {
@@ -69,36 +70,86 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
       onImageCapture?.(file);
     }
 
+    if (!isStreaming) {
+      return (
+        <BlackScreen>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ padding: 1 }}
+            endIcon={<CameraAltIcon fontSize="large" />}
+            onClick={startStreaming}
+          >
+            Toggle Webcam
+          </Button>
+        </BlackScreen>
+      );
+    }
+
     return (
       <Container>
         <StyledWebcam ref={webcamRef} muted={true} />
-        <CaptureButton
-          onClick={onCaptureButtonPressed}
-          variant="contained"
-          color="error"
-          size="small"
-        >
-          <CameraAltIcon fontSize="large" />
-        </CaptureButton>
+
+        <ButtonContainer>
+          <RoundedButton
+            onClick={onCaptureButtonPressed}
+            variant="contained"
+            color="primary"
+          >
+            <CameraAltIcon fontSize="large" />
+          </RoundedButton>
+          <RoundedButton
+            onClick={stopStreaming}
+            variant="contained"
+            color="error"
+          >
+            <CloseIcon fontSize="large" />
+          </RoundedButton>
+        </ButtonContainer>
         <StyledCanvas ref={canvasRef} />
       </Container>
     );
   }
 );
 
+const BlackScreen = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+
+  align-items: center;
+  justify-content: center;
+
+  background: black;
+`;
+
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
   position: relative;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  background-color: black;
+
+  align-items: end;
+  justify-content: center;
 `;
 
-const CaptureButton = styled(Button)`
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  gap: 30px;
+  box-sizing: border-box;
+
+  margin-right: 30px;
+`;
+
+const RoundedButton = styled(Button)`
   aspect-ratio: 1;
   border-radius: 50%;
-  margin: auto;
-  margin-right: 30px;
 `;
 
 const StyledWebcam = styled(Webcam)`
