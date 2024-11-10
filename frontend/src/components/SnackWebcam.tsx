@@ -88,7 +88,13 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
 
     return (
       <Container>
-        <StyledWebcam ref={webcamRef} muted={true} />
+        <StyledWebcam
+          ref={webcamRef}
+          muted={true}
+          videoConstraints={{
+            facingMode: { exact: "environment" },
+          }}
+        />
 
         <ButtonContainer>
           <RoundedButton
@@ -161,7 +167,7 @@ const StyledWebcam = styled(Webcam)`
   object-fit: cover;
   pointer-events: none;
 
-  transform: scaleX(-1);
+  /* transform: scaleX(-1); */
 `;
 
 const StyledCanvas = styled.canvas`
