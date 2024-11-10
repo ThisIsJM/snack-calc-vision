@@ -41,7 +41,7 @@ def get_displayed_items(img):
     objects = [
         {
             'bbox': box.xyxy[0].tolist(),
-            'class': item_categories.get(int(box.cls[0].item()), 'Unknown'),
+            'class':  item_categories[int(box.cls[0].item())]["name"],
             'confidence': box.conf[0].item()
         }
         for result in results for box in result.boxes
