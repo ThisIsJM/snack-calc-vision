@@ -5,29 +5,69 @@ import TransactionTable from "../TransactionTable";
 import SnackWebcam from "../SnackWebcam";
 import ImageUploader from "../ImageUploader";
 import { useTransactionStore } from "../../store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import AddTransactionModal from "../AddTransactionModal";
+import { ShowResponse } from "./Scanner";
+import { addTransactionAPI, calculateAPI } from "../../api";
 
 function Home() {
   const { transactions, updateTransactions } = useTransactionStore(
     (state) => state
   );
 
+  const [image, setImage] = useState<File | null>(null);
+  const [showResponse, setShowResponse] = useState<ShowResponse>({
+    show: false,
+    transaction: undefined,
+  });
+
   useEffect(() => {
     updateTransactions();
   }, []);
+
+  async function closeHandler() {
+    setShowResponse({ show: false, transaction: undefined });
+  }
+
+  async function calculatePriceHandler(file: File) {
+    const transaction = await calculateAPI(file);
+
+    setImage(file);
+    setShowResponse({ show: true, transaction });
+  }
+
+  async function submitHandler() {
+    const { transaction } = showResponse;
+
+    if (transaction) {
+      const response = await addTransactionAPI(transaction);
+      if (response.success) await updateTransactions();
+
+      return response.success;
+    }
+
+    return false;
+  }
 
   return (
     <Container>
       <Typography variant="h6">Dashboard</Typography>
       <BodyContainer>
         <BodyContents>
-          <ImageUploader />
+          <ImageUploader onImageUpload={calculatePriceHandler} />
           <SnackWebcam />
         </BodyContents>
         <BodyContents>
           <TransactionTable transactions={transactions} />
         </BodyContents>
       </BodyContainer>
+
+      <AddTransactionModal
+        {...showResponse}
+        image={image}
+        submitHandler={submitHandler}
+        closeHandler={closeHandler}
+      />
     </Container>
   );
 }
