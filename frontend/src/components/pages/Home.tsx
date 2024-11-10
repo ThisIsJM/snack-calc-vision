@@ -55,7 +55,7 @@ function Home() {
       <BodyContainer>
         <BodyContents>
           <ImageUploader onImageUpload={calculatePriceHandler} />
-          <SnackWebcam />
+          <SnackWebcam onImageCapture={calculatePriceHandler} />
         </BodyContents>
         <BodyContents>
           <TransactionTable transactions={transactions} />

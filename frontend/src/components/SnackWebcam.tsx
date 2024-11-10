@@ -9,7 +9,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 interface Props {
   captureInterval?: number;
-  onImageCapture?: (file: File | undefined) => void;
+  onImageCapture?: (file: File) => Promise<void>;
 }
 
 export interface SnackWebcamHandle {
@@ -67,7 +67,7 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
 
     async function onCaptureButtonPressed() {
       const file = await captureImage();
-      onImageCapture?.(file);
+      if (file) onImageCapture?.(file);
     }
 
     if (!isStreaming) {
