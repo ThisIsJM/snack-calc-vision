@@ -58,7 +58,6 @@ const SnackWebcam = forwardRef<SnackWebcamHandle, Props>(
         if (!canvasRef.current || !file) return;
 
         const detections = (await predictAPI(file)) || [];
-
         drawBoundingBoxes(canvasRef.current, detections);
       } catch (error) {
         console.error("Error capturing image:", error);

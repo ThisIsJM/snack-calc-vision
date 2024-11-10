@@ -19,7 +19,7 @@ function App() {
 export default App;
 
 const MainContainer = styled.div`
-  height: 100vh;
+  height: 100svh;
   width: 100%;
   box-sizing: border-box;
   display: flex;
