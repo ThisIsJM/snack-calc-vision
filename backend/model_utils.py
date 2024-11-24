@@ -28,7 +28,7 @@ def predict_from_image(img):
         return ({'error': 'Invalid image format'})
 
     # Resize the image for faster processing (adjust dimensions as needed)
-    img = cv2.resize(img, (256, 256))  # Example resize, change according to your model
+    img = cv2.resize(img, (480, 480))  # Example resize, change according to your model
     return model.predict(img)
 
 def get_displayed_items(img):

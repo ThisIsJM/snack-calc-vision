@@ -51,7 +51,7 @@ function TransactionTable({ transactions }: Props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {transactions.map((transaction) => (
+          {transactions?.map((transaction) => (
             <TableRow key={transaction.id}>
               <TableCell>{transaction.id}</TableCell>
               <TableCell>
